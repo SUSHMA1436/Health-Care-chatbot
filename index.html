@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Healthcare Chatbot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="chat-container">
+    <header>
+      <h1>Healthcare Chatbot</h1>
+      <p>Your virtual health assistant</p>
+    </header>
+
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="Type your health query..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const chatBox = document.getElementById("chatBox");
+      const userText = input.value;
+
+      if (userText.trim() === "") return;
+
+      // Display user's message
+      chatBox.innerHTML += `<div class="message user">${userText}</div>`;
+      input.value = "";
+
+      // Send to backend
+      const res = await fetch("/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userText }),
+      });
+
+      const data = await res.json();
+
+      // Display bot response
+      chatBox.innerHTML += `<div class="message bot">${data.reply}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
